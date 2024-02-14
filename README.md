@@ -19,10 +19,10 @@ The goal is to demostrate how one can control the Seestar S50 programmatically. 
 How to use it:
 
 0) Setup your Seestar normally, with Horizontal Calbration, Dark Frame Calbraion and/or Leveling completed
-1) With your Windows computer/laptop, open up a windows Powershell or Console window and navigate to this distribution folder.
-2) Enter ".\seestar_run.ext" to see the command parameters required.
+1) With your Windows computer/laptop, install Python for Windows: https://www.python.org/downloads/windows/
+2) in Powershell, run the following
 
-.\seestar_run <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>
+python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>
 
 ip_address:
     The ip address of your seestar. Find it under Advanced Feature -> RTSP Address
@@ -46,10 +46,10 @@ RA and Dec offset factors:
 Examples:
 
 To catpure a custom target with specific target name and location:
-.\seestar_run.exe 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 1 1 1 1
+python seestar_run.py 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 1 1 1 1
 
 To capture a mosaic of a target:
-.\seestar_run.exe 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 2 3 1.2 1.1
+python seestar_run.py 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 2 3 1.2 1.1
 
 To capture multiple targets in sequence:
 create a batch file and enter multiple lines of the commands described above
@@ -60,7 +60,7 @@ you can add a sleep command in the batch file to wait for specific amount of tim
 To use external tool to set target:
     1) Use Seestar App, Stellarium, or other apps to move the Seestar to the desired target
     2) With the seestar_run command, enter a negative number for <ra>
-       example: .\seestar_run.exe 192.168.110.30 'Castor' -1.0 -1.0 0 60 1 1 1 1
+       example: python seestar_run.py 192.168.110.30 'Castor' -1.0 -1.0 0 60 1 1 1 1
 
 
 Enjoy, and good luck.

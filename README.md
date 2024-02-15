@@ -1,74 +1,73 @@
-seestar_run
-version 1.0a1
+## seestar_run.md
 
-Tested with Seestar Firmware version: 2.25
+**Version:** 1.0a1
 
--------------
+**Tested Firmware:** 2.25
 
-This is an example app that will serve as a companion app with the Seestar mobile app. It is compiled for Windows OS.
+**Overview:**
 
-The goal is to demostrate how one can control the Seestar S50 programmatically. Example of its uses are:
+This document details `seestar_run`, a companion application for the Seestar mobile app, written for Windows OS. It showcases programmatic control of the Seestar S50, enabling tasks like:
 
-1) Mosaic Capture
-2) Night Session Capture Planning
-3) Custom Target Capture
-4) Spectral Image Capture over Extended Frames
+* Mosaic captures
+* Night session planning
+* Custom target capture
+* Spectral image capture over extended frames
 
------------------------------
+**Requirements:**
 
-How to use it:
+* Seestar with completed calibration steps (horizontal, dark frame, leveling)
+* Windows computer/laptop with Python installed ([https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/))
 
-0) Setup your Seestar normally, with Horizontal Calbration, Dark Frame Calbraion and/or Leveling completed
-1) With your Windows computer/laptop, install Python for Windows: https://www.python.org/downloads/windows/
-2) in Powershell, run the following
+**Usage:**
 
+1. **Setup:** Ensure Seestar calibration is complete.
+2. **Install Python:** Follow the link above if not already installed.
+3. **Run Commands:** Use PowerShell and the following command:
+
+```
 python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>
+```
 
-ip_address:
-    The ip address of your seestar. Find it under Advanced Feature -> RTSP Address
-target_name:
-    Name of your target. If doing mosaic, the name will be saved in format <target_name>_<RA_panel_num>_<Dec_panel_num>
-ra: 
-    RA value of the target. if RA is < 0, then the app will use the current location of the Sky Atlas
-dec:
-    Dec value of the target
-is_use_LP_filter:
-    1 if you want to use the Light Pollution Filter for your captures
-session_time: 
-    how long a capture session will last for each panel. Note this is not integration time because there will be rejected frames.
-RA and Dec panel size: 
-    determines how many panels in a mosaic
-RA and Dec offset factors:
-    determine how far apart are each panel in a mosaic
+**Parameters:**
 
------------------------------
+* **ip_address:** Seestar's IP address (found in "Advanced Feature -> RTSP Address").
+* **target_name:** Target name. During mosaics, saved format is `<target_name>_<RA_panel_num>_<Dec_panel_num>`.
+* **ra:** Target's RA value. If negative, uses current Sky Atlas location.
+* **dec:** Target's Dec value.
+* **is_use_LP_filter:** Set to 1 for light pollution filter usage.
+* **session_time:** Capture session duration per panel (not integration time).
+* **RA and Dec panel size:** Number of panels in a mosaic.
+* **RA and Dec offset factors:** Distance between mosaic panels.
 
-Examples:
+**Examples:**
 
-To catpure a custom target with specific target name and location:
+* **Custom target capture:**
+
+```
 python seestar_run.py 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 1 1 1 1
+```
 
-To capture a mosaic of a target:
+* **Mosaic capture:**
+
+```
 python seestar_run.py 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 2 3 1.2 1.1
+```
 
-To capture multiple targets in sequence:
-create a batch file and enter multiple lines of the commands described above
+* **Multiple target capture:** Create a batch file with multiple command lines using the above format.
+* **Night session planning:** Use sleep commands in a batch file to schedule captures.
+* **External target setting:**
 
-To do night session planning:
-you can add a sleep command in the batch file to wait for specific amount of time before/between captures
+    1. Set the target using Seestar App, Stellarium, or other tools.
+    2. Use a negative value for `<ra>` in the `seestar_run` command:
 
-To use external tool to set target:
-    1) Use Seestar App, Stellarium, or other apps to move the Seestar to the desired target
-    2) With the seestar_run command, enter a negative number for <ra>
-       example: python seestar_run.py 192.168.110.30 'Castor' -1.0 -1.0 0 60 1 1 1 1
+```
+python seestar_run.py 192.168.110.30 'Castor' -1.0 -1.0 0 60 1 1 1 1
+```
 
+**Feedback:**
 
-Enjoy, and good luck.
+Please report bugs and share feedback on the Discord channel:
 
-Please give bug reports and feedback in the Discord Channel:
+[https://discord.com/channels/1204838310841815040/1207422275960176650](https://discord.com/channels/1204838310841815040/1207422275960176650)
 
-https://discord.com/channels/1204838310841815040/1207422275960176650
-
-
-
-
+**Enjoy and good luck!**

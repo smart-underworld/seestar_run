@@ -16,13 +16,13 @@ This document details `seestar_run`, a companion application for the Seestar mob
 **Requirements:**
 
 * Seestar with completed calibration steps (horizontal, dark frame, leveling)
-* Windows computer/laptop with Python installed ([https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/))
+* computer/laptop with Python installed (e.g. [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/))
 
 **Usage:**
 
 1. **Setup:** Ensure Seestar calibration is complete.
 2. **Install Python:** Follow the link above if not already installed.
-3. **Run Commands:** Use PowerShell and the following command:
+3. **Run Commands:** Use PowerShell for Windows or python in other OS and run the following command:
 
 ```
 python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>
@@ -66,7 +66,7 @@ python seestar_run.py 192.168.110.30 'Castor' -1.0 -1.0 0 60 1 1 1 1
 
 **Feedback:**
 
-Please report bugs and share feedback on the Discord channel:
+Please report bugs and share feedback on the this github repo or in the Discord channel:
 
 [https://discord.com/channels/1204838310841815040/1207422275960176650](https://discord.com/channels/1204838310841815040/1207422275960176650)
 

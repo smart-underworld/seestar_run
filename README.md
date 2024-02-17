@@ -6,7 +6,7 @@
 
 **Overview:**
 
-This document details `seestar_run`, a companion application for the Seestar mobile app, written for Windows OS. It showcases programmatic control of the Seestar S50, enabling tasks like:
+This document details `seestar_run`, a companion application for the Seestar mobile app, written on python to be used in most modern OS. It showcases programmatic control of the Seestar S50, enabling tasks like:
 
 * Mosaic captures
 * Night session planning
@@ -35,9 +35,9 @@ python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <
 * **ra:** Target's RA value. If negative, uses current Sky Atlas location.
 * **dec:** Target's Dec value.
 * **is_use_LP_filter:** Set to 1 for light pollution filter usage.
-* **session_time:** Capture session duration per panel (not integration time).
+* **session_time:** Capture session duration per panel in seconds (not integration time).
 * **RA and Dec panel size:** Number of panels in a mosaic.
-* **RA and Dec offset factors:** Distance between mosaic panels.
+* **RA and Dec offset factors:** Distance between mosaic panels, lower values will have more overlaps
 
 **Examples:**
 

@@ -33,7 +33,7 @@ python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <
 * **ip_address:** Seestar's IP address (found in "Advanced Feature -> RTSP Address").
 * **target_name:** Target name. During mosaics, saved format is `<target_name>_<RA_panel_num>_<Dec_panel_num>`.
 * **ra:** Target's RA value. Can be a float or a string format of "hr:mm:ss.s". If negative, uses current Sky Atlas location.
-* **dec:** Target's Dec value. Can be a float or a string format of "<sign>deg:mm:ss.s". <Sign> is optional
+* **dec:** Target's Dec value. Can be a float or a string format of "\<sign\>deg:mm:ss.s". \<sign\> is optional
 * **is_use_LP_filter:** Set to 1 for light pollution filter usage.
 * **session_time:** Capture session duration per panel in seconds (not integration time).
 * **RA and Dec panel size:** Number of panels in a mosaic.

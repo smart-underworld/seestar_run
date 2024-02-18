@@ -45,6 +45,10 @@ python seestar_run.py <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <
 
 ```
 python seestar_run.py 192.168.110.30 'Castor_Kai' 7.602 31.83 0 60 1 1 1 1
+python seestar_run.py 192.168.110.30 'Castor_Kai' -1 -1 0 60 1 1 1 1
+python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '-41:24:23.5' 0 60 2 2 1.0 1.0
+python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '+41:24:23.5' 0 60 2 2 1.0 1.0
+python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '41:24:23.5' 0 60 2 2 1.0 1.0
 ```
 
 * **Mosaic capture:**

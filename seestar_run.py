@@ -138,7 +138,30 @@ def sleep_with_heartbeat():
             json_message("test_connection")
         time.sleep(1)
 
+def parse_ra_to_float(ra_string):
+    # Split the RA string into hours, minutes, and seconds
+    hours, minutes, seconds = map(float, ra_string.split(':'))
 
+    # Convert to decimal degrees
+    ra_decimal = hours + minutes / 60 + seconds / 3600
+
+    return ra_decimal
+    
+def parse_dec_to_float(dec_string):
+    # Split the Dec string into degrees, minutes, and seconds
+    if dec_string[0] == '-':
+        sign = -1
+        dec_string = dec_string[1:]
+    else:
+        sign = 1
+    print(dec_string)
+    degrees, minutes, seconds = map(float, dec_string.split(':'))
+
+    # Convert to decimal degrees
+    dec_decimal = sign * degrees + minutes / 60 + seconds / 3600
+
+    return dec_decimal
+    
 is_watch_events = True
     
 def main():
@@ -150,7 +173,7 @@ def main():
     global is_watch_events
     global is_debug
     
-    version_string = "1.0a1"
+    version_string = "1.0.0b1"
     print("seestar_run version: ", version_string)
     
     if len(sys.argv) != 11 and len(sys.argv) != 12:
@@ -159,8 +182,16 @@ def main():
     
     HOST= sys.argv[1]
     target_name = sys.argv[2]
-    center_RA = float(sys.argv[3])
-    center_Dec = float(sys.argv[4])
+    try:
+        center_RA = float(sys.argv[3])
+    except ValueError:
+        center_RA = parse_ra_to_float(sys.argv[3])
+        
+    try:
+        center_Dec = float(sys.argv[4])
+    except ValueError:
+        center_Dec = parse_dec_to_float(sys.argv[4])
+    
     is_use_LP_filter = sys.argv[5] == '1'
     session_time = int(sys.argv[6])
     nRA = int(sys.argv[7])
@@ -265,10 +296,12 @@ def main():
     
     
     
-# .\mosaic.exe 192.168.110.30 'Castor' 0 60 2 2 7.602 31.83
-# python3 mosaic.py 192.168.110.30 'Castor' 7.602 31.83 0 60 2 2 1.0 1.0 Kai
+
 # seestar_run <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>
-# 
+# python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '-41:24:23.5' 0 60 2 2 1.0 1.0
+# python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '+41:24:23.5' 0 60 2 2 1.0 1.0
+# python seestar_run.py 192.168.110.30 'Castor' '7:24:32.5' '41:24:23.5' 0 60 2 2 1.0 1.0
+# python seestar_run.py 192.168.110.30 'Castor' 7.4090278 41.4065278 0 60 2 2 1.0 1.0
 if __name__ == "__main__":
     main()
     

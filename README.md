@@ -1,6 +1,6 @@
 ## seestar_run.md
 
-**Version:** 1.0a1
+**Version:** 1.0.0b1
 
 **Tested Firmware:** 2.25
 

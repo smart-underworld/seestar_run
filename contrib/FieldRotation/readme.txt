@@ -1,6 +1,8 @@
 From Leon Turner:
 
 
+A temporary test for push changes
+
 Hi All, I've been playing around a bit in Python with Astropy etc (with lots of help from ChatGPT). 
 I wanted to create a tool for those of us who aren't ready to switch to EQ mode yet, that allows us to get a bit of a clearer idea of what the field rotation for a given object might be (rather than just "good high in east and west"!). 
 I've used the maths from here: https://calgary.rasc.ca/field_rotation.htm.

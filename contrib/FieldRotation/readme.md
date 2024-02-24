@@ -14,6 +14,8 @@ In the example below, you can see that a good time for imagining M31 would be be
 
 ![Example output](images/fieldrotateM31.jpg)
 
+**Note:** The chart shows the *magnitude* of the field rotation effect, since the idea is to show whether an area is good or bad for imaging. The effect is actually opposite in the south and north however (clockwise in one, and anticlockwise in the other).
+
 Additionally, there is a second workbook that can generate an animation of the field rotation effect for a range of latitudes.
 
 The programs are presented as "Jupyter" python notebooks. The intention here is not really to provide a standalone tool with a gui etc, but to show what is possible with various Python libraries that are freely available.

@@ -2,6 +2,8 @@
 
 ### **Introduction**
 
+A small change to check that branches are working.
+
 Doing astrophotography with an altazimuth mounted telescope or lens has a limitation not seen with equatorially mounted scopes.
 
 They suffer from what is known as "field rotation" - as the telescope tracks an object across the sky, the framing of the picture changes, leaving you with noise in the corners of the image, and thus reducing the useful imaging area.

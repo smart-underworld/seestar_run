@@ -158,7 +158,7 @@ def parse_dec_to_float(dec_string):
     degrees, minutes, seconds = map(float, dec_string.split(':'))
 
     # Convert to decimal degrees
-    dec_decimal = sign * degrees + minutes / 60 + seconds / 3600
+    dec_decimal = sign * (degrees + minutes / 60 + seconds / 3600)
 
     return dec_decimal
     

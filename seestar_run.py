@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 import threading
 import sys
+import argparse
 
 def heartbeat(): #I noticed a lot of pairs of test_connection followed by a get if nothing was going on
     json_message("test_connection")
@@ -175,34 +176,33 @@ def main():
     
     version_string = "1.0.0b1"
     print("seestar_run version: ", version_string)
-    
-    if len(sys.argv) != 11 and len(sys.argv) != 12:
-        print("expected seestar_run <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>")
-        sys.exit()
-    
-    HOST= sys.argv[1]
-    target_name = sys.argv[2]
-    try:
-        center_RA = float(sys.argv[3])
-    except ValueError:
-        center_RA = parse_ra_to_float(sys.argv[3])
-        
-    try:
-        center_Dec = float(sys.argv[4])
-    except ValueError:
-        center_Dec = parse_dec_to_float(sys.argv[4])
-    
-    is_use_LP_filter = sys.argv[5] == '1'
-    session_time = int(sys.argv[6])
-    nRA = int(sys.argv[7])
-    nDec = int(sys.argv[8])
-    mRA = float(sys.argv[9])
-    mDec = float(sys.argv[10])
-    is_debug = False
 
-    if len(sys.argv) == 12:
-        is_debug = sys.argv[11]=="Kai"
+    parser = setup_argparse()
+    args = parser.parse_args()
+    # This is a bit messy, but can be cleaned up in a future diff
+    HOST = args.ip
+    target_name = args.title
+    center_RA = args.ra
+    center_Dec = args.dec
+    is_use_LP_filter = args.is_use_LP_filter
+    session_time = args.session_time
+    nRA = args.ra_panel_size
+    nDec = args.dec_panel_size
+    mRA = args.ra_offset_factor
+    mDec = args.dec_offset_factor
+
+    try:
+        center_RA = float(center_RA)
+    except ValueError:
+        center_RA = parse_ra_to_float(center_RA)
         
+    try:
+        center_Dec = float(center_Dec)
+    except ValueError:
+        center_Dec = parse_dec_to_float(center_Dec)
+
+    is_debug = args.is_debug == "Kai"
+
     print(HOST, target_name, center_RA, center_Dec, is_use_LP_filter, session_time, nRA, nDec, mRA, mDec)
     
     # verify mosaic pattern
@@ -295,6 +295,22 @@ def main():
     sys.exit()
     
     
+def setup_argparse():
+    parser = argparse.ArgumentParser(description='Seestar Run')
+    parser.add_argument('ip', type=str,
+                        help='Your SeeStar\'s IP address')
+    parser.add_argument('title', type=str, help="Observation Target Title")
+    parser.add_argument('ra', type=str, help="Right Ascenscion Target")
+    parser.add_argument('dec', type=str, help="Declination Target")
+    parser.add_argument('is_use_LP_filter', type=bool, help="Use the SeeStar's built-in light pollution filter.")
+    parser.add_argument('session_time', type=int, help="Time (in seconds) for the stacking session")
+    parser.add_argument('ra_panel_size', type=int, help="RA mosaic size")
+    parser.add_argument('dec_panel_size', type=int, help="Dec mosaic size")
+    parser.add_argument('ra_offset_factor', type=float)
+    parser.add_argument('dec_offset_factor', type=float)
+    parser.add_argument('is_debug', type=str, default=False, nargs='?', help="Print debug logs while running.")
+
+    return parser
     
 
 # seestar_run <ip_address> <target_name> <ra> <dec> <is_use_LP_filter> <session_time> <RA panel size> <Dec panel size> <RA offset factor> <Dec offset factor>

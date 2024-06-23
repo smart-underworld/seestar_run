@@ -33,6 +33,9 @@ class SeestarClient:
     def set_op_state(self, state):
         self.op_state = state
 
+    def set_session_time(self, session_time):
+        self.session_time = session_time
+
     def send_message(self, data):
         try:
             self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
@@ -141,7 +144,7 @@ class SeestarClient:
         
     def sleep_with_heartbeat(self):
         stacking_timer = 0
-        while stacking_timer < session_time:         # stacking time per segment
+        while stacking_timer < self.session_time:         # stacking time per segment
             stacking_timer += 1
             if stacking_timer % 5 == 0:
                 self.json_message("test_connection")
@@ -174,9 +177,6 @@ def parse_dec_to_float(dec_string):
 is_watch_events = True
     
 def main():
-    global HOST
-    global PORT
-    global session_time
     global is_watch_events
     global is_debug
     
@@ -225,6 +225,7 @@ def main():
     delta_Dec = 0.9
 
     seestar_client = SeestarClient(HOST, PORT, cmdid)
+    seestar_client.set_session_time(session_time)
     s = seestar_client.connect()
 
     with s:
@@ -244,12 +245,12 @@ def main():
             
         # print input requests
         print("received parameters:")
-        print("  ip address    : " + HOST)
+        print("  ip address    : " + seestar_client.ip)
         print("  target        : " + target_name)
         print("  RA            : ", center_RA)
         print("  Dec           : ", center_Dec)
         print("  use LP filter : ", is_use_LP_filter)
-        print("  session time  : ", session_time)
+        print("  session time  : ", seestar_client.session_time)
         print("  RA num panels : ", nRA)
         print("  Dec num panels: ", nDec)
         print("  RA offset x   : ", mRA)

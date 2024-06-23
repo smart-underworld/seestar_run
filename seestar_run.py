@@ -16,23 +16,25 @@ class SeestarClient:
         self.json_message("test_connection")
     #    json_message("scope_get_equ_coord")
 
+    def connect(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.ip, self.port))
+        self.socket = s
+        return s
+
     def send_message(self, data):
-        global s
         try:
-            s.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
+            self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
         except socket.error as e:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((HOST, PORT))
+            self.connect()
             self.send_message(data)
 
     def get_socket_msg(self):
-        global s
         try:
-            data = s.recv(1024 * 60)  # comet data is >50kb
+            data = self.socket.recv(1024 * 60)  # comet data is >50kb
         except socket.error as e:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((HOST, PORT))
-            data = s.recv(1024 * 60)
+            self.connect()
+            data = self.socket.recv(1024 * 60)
         data = data.decode("utf-8")
         if is_debug:
             print("Received :", data)
@@ -41,7 +43,6 @@ class SeestarClient:
     def receieve_message_thread_fn(self):
         global is_watch_events
         global op_state
-        global s
             
         msg_remainder = ""
         while is_watch_events:
@@ -175,8 +176,6 @@ def main():
     global HOST
     global PORT
     global session_time
-    global s
-    global cmdid
     global is_watch_events
     global is_debug
     
@@ -225,9 +224,8 @@ def main():
     delta_Dec = 0.9
 
     seestar_client = SeestarClient(HOST, PORT, cmdid)
+    s = seestar_client.connect()
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, PORT))
     with s:
         
         # flush the socket input stream for garbage

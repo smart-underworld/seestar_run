@@ -22,6 +22,11 @@ class SeestarClient:
         self.socket = s
         return s
 
+    def get_cmdid(self):
+        cmdid = self.cmdid
+        self.cmdid += 1
+        return cmdid
+
     def send_message(self, data):
         try:
             self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
@@ -70,9 +75,7 @@ class SeestarClient:
             time.sleep(1)
 
     def json_message(self, instruction):
-        global cmdid
-        data = {"id": cmdid, "method": instruction}
-        cmdid += 1
+        data = {"id": self.get_cmdid(), "method": instruction}
         json_data = json.dumps(data)
         if is_debug:
             print("Sending %s" % json_data)
@@ -87,11 +90,9 @@ class SeestarClient:
 
 
     def goto_target(self, ra, dec, target_name, is_lp_filter):
-        global cmdid
         print("going to target...")
         data = {}
-        data['id'] = cmdid
-        cmdid += 1
+        data['id'] = self.get_cmdid()
         data['method'] = 'iscope_start_view'
         params = {}
         params['mode'] = 'star'
@@ -103,11 +104,9 @@ class SeestarClient:
         self.json_message2(data)
         
     def start_stack(self):
-        global cmdid
         print("starting to stack...")
         data = {}
-        data['id'] = cmdid
-        cmdid += 1
+        data['id'] = self.get_cmdid()
         data['method'] = 'iscope_start_stack'
         params = {}
         params['restart'] = True
@@ -115,11 +114,9 @@ class SeestarClient:
         self.json_message2(data)
 
     def stop_stack(self):
-        global cmdid
         print("stop stacking...")
         data = {}
-        data['id'] = cmdid
-        cmdid += 1
+        data['id'] = self.get_cmdid()
         data['method'] = 'iscope_stop_view'
         params = {}
         params['stage'] = 'Stack'

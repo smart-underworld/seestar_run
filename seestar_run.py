@@ -12,6 +12,7 @@ class SeestarClient:
         self.port = port
         self.cmdid = cmdid
         self.is_watch_events = True
+        self.is_debug = False
 
     def heartbeat(self): #I noticed a lot of pairs of test_connection followed by a get if nothing was going on
         self.json_message("test_connection")
@@ -40,6 +41,9 @@ class SeestarClient:
     def stop_watching(self):
         self.is_watch_events = False
 
+    def set_debug(self, is_debug):
+        self.is_debug = is_debug
+
     def send_message(self, data):
         try:
             self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
@@ -54,7 +58,7 @@ class SeestarClient:
             self.connect()
             data = self.socket.recv(1024 * 60)
         data = data.decode("utf-8")
-        if is_debug:
+        if self.is_debug:
             print("Received :", data)
         return data
         
@@ -79,7 +83,7 @@ class SeestarClient:
                         if state == "complete" or state == "fail":
                             self.set_op_state(state)
                     
-                    if is_debug:
+                    if self.is_debug:
                         print(parsed_data)
                         
                     first_index = msg_remainder.find("\r\n")
@@ -88,14 +92,14 @@ class SeestarClient:
     def json_message(self, instruction):
         data = {"id": self.get_cmdid(), "method": instruction}
         json_data = json.dumps(data)
-        if is_debug:
+        if self.is_debug:
             print("Sending %s" % json_data)
         self.send_message(json_data+"\r\n")
 
     def json_message2(self, data):
         if data:
             json_data = json.dumps(data)
-            if is_debug:
+            if self.is_debug:
                 print("Sending2 %s" % json_data)
             resp = self.send_message(json_data + "\r\n")
 
@@ -179,8 +183,6 @@ def parse_dec_to_float(dec_string):
     
     
 def main():
-    global is_debug
-    
     version_string = "1.0.0b1"
     print("seestar_run version: ", version_string)
 
@@ -227,6 +229,7 @@ def main():
 
     seestar_client = SeestarClient(HOST, PORT, cmdid)
     seestar_client.set_session_time(session_time)
+    seestar_client.set_debug(is_debug)
     s = seestar_client.connect()
 
     with s:

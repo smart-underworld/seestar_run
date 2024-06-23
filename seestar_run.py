@@ -6,138 +6,144 @@ import threading
 import sys
 import argparse
 
-def heartbeat(): #I noticed a lot of pairs of test_connection followed by a get if nothing was going on
-    json_message("test_connection")
-#    json_message("scope_get_equ_coord")
+class SeestarClient:
+    def __init__(self, ip, port, cmdid):
+        self.ip = ip
+        self.port = port
+        self.cmdid = cmdid
 
-def send_message(data):
-    global s
-    try:
-        s.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
-    except socket.error as e:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((HOST, PORT))
-        send_message(data)
+    def heartbeat(self): #I noticed a lot of pairs of test_connection followed by a get if nothing was going on
+        self.json_message("test_connection")
+    #    json_message("scope_get_equ_coord")
 
-def get_socket_msg():
-    global s
-    try:
-        data = s.recv(1024 * 60)  # comet data is >50kb
-    except socket.error as e:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((HOST, PORT))
-        data = s.recv(1024 * 60)
-    data = data.decode("utf-8")
-    if is_debug:
-        print("Received :", data)
-    return data
-    
-def receieve_message_thread_fn():
-    global is_watch_events
-    global op_state
-    global s
+    def send_message(self, data):
+        global s
+        try:
+            s.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
+        except socket.error as e:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((HOST, PORT))
+            self.send_message(data)
+
+    def get_socket_msg(self):
+        global s
+        try:
+            data = s.recv(1024 * 60)  # comet data is >50kb
+        except socket.error as e:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((HOST, PORT))
+            data = s.recv(1024 * 60)
+        data = data.decode("utf-8")
+        if is_debug:
+            print("Received :", data)
+        return data
         
-    msg_remainder = ""
-    while is_watch_events:
-        #print("checking for msg")
-        data = get_socket_msg()
-        if data:
-            msg_remainder += data
-            first_index = msg_remainder.find("\r\n")
+    def receieve_message_thread_fn(self):
+        global is_watch_events
+        global op_state
+        global s
             
-            while first_index >= 0:
-                first_msg = msg_remainder[0:first_index]
-                msg_remainder = msg_remainder[first_index+2:]            
-                parsed_data = json.loads(first_msg)
-                
-                if 'Event' in parsed_data and parsed_data['Event'] == "AutoGoto":
-                    state = parsed_data['state']
-                    print("AutoGoto state: %s" % state)
-                    if state == "complete" or state == "fail":
-                        op_state = state
-                
-                if is_debug:
-                    print(parsed_data)
-                    
+        msg_remainder = ""
+        while is_watch_events:
+            #print("checking for msg")
+            data = self.get_socket_msg()
+            if data:
+                msg_remainder += data
                 first_index = msg_remainder.find("\r\n")
-        time.sleep(1)
+                
+                while first_index >= 0:
+                    first_msg = msg_remainder[0:first_index]
+                    msg_remainder = msg_remainder[first_index+2:]            
+                    parsed_data = json.loads(first_msg)
+                    
+                    if 'Event' in parsed_data and parsed_data['Event'] == "AutoGoto":
+                        state = parsed_data['state']
+                        print("AutoGoto state: %s" % state)
+                        if state == "complete" or state == "fail":
+                            op_state = state
+                    
+                    if is_debug:
+                        print(parsed_data)
+                        
+                    first_index = msg_remainder.find("\r\n")
+            time.sleep(1)
 
-def json_message(instruction):
-    global cmdid
-    data = {"id": cmdid, "method": instruction}
-    cmdid += 1
-    json_data = json.dumps(data)
-    if is_debug:
-        print("Sending %s" % json_data)
-    send_message(json_data+"\r\n")
-
-def json_message2(data):
-    if data:
+    def json_message(self, instruction):
+        global cmdid
+        data = {"id": cmdid, "method": instruction}
+        cmdid += 1
         json_data = json.dumps(data)
         if is_debug:
-            print("Sending2 %s" % json_data)
-        resp = send_message(json_data + "\r\n")
+            print("Sending %s" % json_data)
+        self.send_message(json_data+"\r\n")
+
+    def json_message2(self, data):
+        if data:
+            json_data = json.dumps(data)
+            if is_debug:
+                print("Sending2 %s" % json_data)
+            resp = self.send_message(json_data + "\r\n")
 
 
-def goto_target(ra, dec, target_name, is_lp_filter):
-    global cmdid
-    print("going to target...")
-    data = {}
-    data['id'] = cmdid
-    cmdid += 1
-    data['method'] = 'iscope_start_view'
-    params = {}
-    params['mode'] = 'star'
-    ra_dec = [ra, dec]
-    params['target_ra_dec'] = ra_dec
-    params['target_name'] = target_name
-    params['lp_filter'] = is_lp_filter
-    data['params'] = params
-    json_message2(data)
-    
-def start_stack():
-    global cmdid
-    print("starting to stack...")
-    data = {}
-    data['id'] = cmdid
-    cmdid += 1
-    data['method'] = 'iscope_start_stack'
-    params = {}
-    params['restart'] = True
-    data['params'] = params
-    json_message2(data)
+    def goto_target(self, ra, dec, target_name, is_lp_filter):
+        global cmdid
+        print("going to target...")
+        data = {}
+        data['id'] = cmdid
+        cmdid += 1
+        data['method'] = 'iscope_start_view'
+        params = {}
+        params['mode'] = 'star'
+        ra_dec = [ra, dec]
+        params['target_ra_dec'] = ra_dec
+        params['target_name'] = target_name
+        params['lp_filter'] = is_lp_filter
+        data['params'] = params
+        self.json_message2(data)
+        
+    def start_stack(self):
+        global cmdid
+        print("starting to stack...")
+        data = {}
+        data['id'] = cmdid
+        cmdid += 1
+        data['method'] = 'iscope_start_stack'
+        params = {}
+        params['restart'] = True
+        data['params'] = params
+        self.json_message2(data)
 
-def stop_stack():
-    global cmdid
-    print("stop stacking...")
-    data = {}
-    data['id'] = cmdid
-    cmdid += 1
-    data['method'] = 'iscope_stop_view'
-    params = {}
-    params['stage'] = 'Stack'
-    data['params'] = params
-    json_message2(data)
+    def stop_stack(self):
+        global cmdid
+        print("stop stacking...")
+        data = {}
+        data['id'] = cmdid
+        cmdid += 1
+        data['method'] = 'iscope_stop_view'
+        params = {}
+        params['stage'] = 'Stack'
+        data['params'] = params
+        self.json_message2(data)
 
-def wait_end_op():
-    global op_state
-    op_state = "working"
-    heartbeat_timer = 0
-    while op_state == "working":
-        heartbeat_timer += 1
-        if heartbeat_timer > 5:
-            heartbeat_timer = 0
-            json_message("test_connection")
-        time.sleep(1)
+    def wait_end_op(self):
+        global op_state
+        op_state = "working"
+        heartbeat_timer = 0
+        while op_state == "working":
+            heartbeat_timer += 1
+            if heartbeat_timer > 5:
+                heartbeat_timer = 0
+                self.json_message("test_connection")
+            time.sleep(1)
 
-    
-def sleep_with_heartbeat():
-    stacking_timer = 0
-    while stacking_timer < session_time:         # stacking time per segment
-        stacking_timer += 1
-        if stacking_timer % 5 == 0:
-            json_message("test_connection")
-        time.sleep(1)
+        
+    def sleep_with_heartbeat(self):
+        stacking_timer = 0
+        while stacking_timer < session_time:         # stacking time per segment
+            stacking_timer += 1
+            if stacking_timer % 5 == 0:
+                self.json_message("test_connection")
+            time.sleep(1)
 
 def parse_ra_to_float(ra_string):
     # Split the RA string into hours, minutes, and seconds
@@ -218,6 +224,8 @@ def main():
     delta_RA = 0.06
     delta_Dec = 0.9
 
+    seestar_client = SeestarClient(HOST, PORT, cmdid)
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
     with s:
@@ -226,8 +234,8 @@ def main():
         #get_socket_msg()
         
         if center_RA < 0:
-            json_message("scope_get_equ_coord")
-            data = get_socket_msg()
+            seestar_client.json_message("scope_get_equ_coord")
+            data = seestar_client.get_socket_msg()
             parsed_data = json.loads(data)
             if parsed_data['method'] == "scope_get_equ_coord":
                 data_result = parsed_data['result']
@@ -257,7 +265,7 @@ def main():
         if nDec % 2 == 0:
             center_Dec += delta_Dec/2
         
-        get_msg_thread = threading.Thread(target=receieve_message_thread_fn)
+        get_msg_thread = threading.Thread(target=seestar_client.receieve_message_thread_fn)
         get_msg_thread.start()
         
         mosaic_index = 0
@@ -270,16 +278,16 @@ def main():
                 else:
                     save_target_name = target_name+"_"+str(index_ra+1)+str(index_dec+1)
                 print("goto ", (cur_ra, cur_dec))
-                goto_target(cur_ra, cur_dec, save_target_name, is_use_LP_filter)
-                wait_end_op()
+                seestar_client.goto_target(cur_ra, cur_dec, save_target_name, is_use_LP_filter)
+                seestar_client.wait_end_op()
                 print("Goto operation finished")
                 
                 time.sleep(3)
                 
                 if op_state == "complete":
-                    start_stack()    
-                    sleep_with_heartbeat()
-                    stop_stack()
+                    seestar_client.start_stack()    
+                    seestar_client.sleep_with_heartbeat()
+                    seestar_client.stop_stack()
                     print("Stacking operation finished" + save_target_name)
                 else:
                     print("Goto failed.")

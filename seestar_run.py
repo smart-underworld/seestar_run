@@ -11,6 +11,7 @@ class SeestarClient:
         self.ip = ip
         self.port = port
         self.cmdid = cmdid
+        self.is_watch_events = True
 
     def heartbeat(self): #I noticed a lot of pairs of test_connection followed by a get if nothing was going on
         self.json_message("test_connection")
@@ -36,6 +37,9 @@ class SeestarClient:
     def set_session_time(self, session_time):
         self.session_time = session_time
 
+    def stop_watching(self):
+        self.is_watch_events = False
+
     def send_message(self, data):
         try:
             self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
@@ -55,10 +59,9 @@ class SeestarClient:
         return data
         
     def receieve_message_thread_fn(self):
-        global is_watch_events
             
         msg_remainder = ""
-        while is_watch_events:
+        while self.is_watch_events:
             #print("checking for msg")
             data = self.get_socket_msg()
             if data:
@@ -174,10 +177,8 @@ def parse_dec_to_float(dec_string):
 
     return dec_decimal
     
-is_watch_events = True
     
 def main():
-    global is_watch_events
     global is_debug
     
     version_string = "1.0.0b1"
@@ -298,7 +299,7 @@ def main():
         
         
     print("Finished seestar_run")
-    is_watch_events = False
+    seestar_client.stop_watching()
     get_msg_thread.join(timeout=5)
     sys.exit()
     

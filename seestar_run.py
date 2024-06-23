@@ -27,6 +27,12 @@ class SeestarClient:
         self.cmdid += 1
         return cmdid
 
+    def get_op_state(self):
+        return self.op_state
+
+    def set_op_state(self, state):
+        self.op_state = state
+
     def send_message(self, data):
         try:
             self.socket.sendall(data.encode())  # TODO: would utf-8 or unicode_escaped help here
@@ -47,7 +53,6 @@ class SeestarClient:
         
     def receieve_message_thread_fn(self):
         global is_watch_events
-        global op_state
             
         msg_remainder = ""
         while is_watch_events:
@@ -66,7 +71,7 @@ class SeestarClient:
                         state = parsed_data['state']
                         print("AutoGoto state: %s" % state)
                         if state == "complete" or state == "fail":
-                            op_state = state
+                            self.set_op_state(state)
                     
                     if is_debug:
                         print(parsed_data)
@@ -124,10 +129,9 @@ class SeestarClient:
         self.json_message2(data)
 
     def wait_end_op(self):
-        global op_state
-        op_state = "working"
+        self.set_op_state('working')
         heartbeat_timer = 0
-        while op_state == "working":
+        while self.get_op_state() == "working":
             heartbeat_timer += 1
             if heartbeat_timer > 5:
                 heartbeat_timer = 0
@@ -279,7 +283,7 @@ def main():
                 
                 time.sleep(3)
                 
-                if op_state == "complete":
+                if seestar_client.get_op_state() == "complete":
                     seestar_client.start_stack()    
                     seestar_client.sleep_with_heartbeat()
                     seestar_client.stop_stack()
